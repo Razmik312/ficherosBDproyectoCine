@@ -35,7 +35,7 @@ select concat(a.apellido, ' ', a.nombre) as nombre_completo, count(ap.pelicula_I
 from actor a
 inner join actor_actua_pelicula ap on a.id_actor = ap.actor_id_actor
 group by a.id_actor, a.apellido, a.nombre
-having count(ap.pelicula_id_pelicula) < (
+having count(ap.pelicula_id_pelicula) > (
     select avg(peliculas_por_actor) 
     from (
         select count(*) as peliculas_por_actor
@@ -43,7 +43,7 @@ having count(ap.pelicula_id_pelicula) < (
         group by actor_id_actor
     ) as peliculas_por_actor
 )
-order by a.apellido;
+order by a.Apellido;
 
 -- Media de peliculas de un actor
 select AVG(peliculas_por_actor) as promedio_peliculas_por_actor
@@ -293,10 +293,10 @@ call contarPeliculasPorGeneroDeActor(4209);
 
 -- TRIGGERS
 
+
+-- 1
 drop trigger if exists validarduracionpelicula;
-
 delimiter &&
-
 create trigger validarDuracionPelicula
 before insert on pelicula
 for each row
@@ -323,8 +323,8 @@ values (700, 'Pelicula corta', 30, 'Comedia', 'Una sinopsis', 'Director Z', '202
 
 
 
--- 2. Verificar que el actor a insertar tenga menos de 100 años
 
+-- 2
 
 delimiter &&
 create trigger verificarEdadActor
@@ -349,3 +349,34 @@ delimiter ;
 insert into actor (id_actor, nombre, apellido, fecha_nacimiento)
 values (3000, 'Manuel', 'Marcos', '2000-02-17');
 
+
+
+
+
+
+
+
+delimiter &&
+create trigger ajustarprecioporanioygenero
+after update on pelicula
+for each row
+begin
+    -- ajustar precio para acción o terror en salas vip
+    if new.genero in ('acción', 'terror') then
+        update sala s
+        inner join proyeccion p on s.id_sala = p.sala_id_sala
+        set s.precio = s.precio * 1.10
+        where p.pelicula_id_pelicula = new.id_pelicula
+        and s.tipo = 'vip';
+    end if;
+
+    -- ajustar precio para comedia en salas normal
+    if new.genero = 'comedia' then
+        update sala s
+        inner join proyeccion p on s.id_sala = p.sala_id_sala
+        set s.precio = s.precio * 0.95
+        where p.pelicula_id_pelicula = new.id_pelicula
+        and s.tipo = 'normal';
+    end if;
+end &&
+delimiter ;
