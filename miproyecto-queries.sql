@@ -355,7 +355,7 @@ values (3000, 'Manuel', 'Marcos', '2000-02-17');
 
 
 
-
+-- 3
 delimiter &&
 create trigger ajustarprecioporanioygenero
 after update on pelicula
