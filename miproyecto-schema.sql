@@ -123,7 +123,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`proyeccion` (
   `Fecha_Proyeccion` DATE NOT NULL,
-  `Hora_Proyeccion` ENUM('15:00', '17:30', ' 21:00') NOT NULL,
+  `Hora_Proyeccion` ENUM('15:00', '17:30', '21:00') NOT NULL,
   `sala_Id_Sala` INT NOT NULL,
   `sala_cine_Id_Cine` INT NOT NULL,
   `pelicula_Id_Pelicula` INT NOT NULL,
